@@ -1,0 +1,186 @@
+/* ============================================================
+   layout.css
+   Page grid and section layout for the Ambient Generator.
+   Three-zone layout: top controls / middle canvas / bottom export.
+   ============================================================ */
+
+/* ── Page shell ─────────────────────────────────────────────── */
+.app-shell {
+  min-height:     100vh;
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  padding:        40px 20px 80px;
+}
+
+/* ── App header ─────────────────────────────────────────────── */
+.app-header {
+  width:         100%;
+  max-width:     680px;
+  margin-bottom: 36px;
+}
+.app-header h1  { margin-bottom: 4px; }
+.app-header .sub {
+  font-size:   12px;
+  color:       var(--gray);
+  font-weight: 400;
+}
+
+/* ── Main content column ─────────────────────────────────────── */
+.app-main {
+  width:     100%;
+  max-width: 680px;
+  display:   flex;
+  flex-direction: column;
+  gap:       0;
+}
+
+/* ── Zone: Visual canvas ─────────────────────────────────────── */
+.zone-canvas {
+  margin-bottom: 16px;
+}
+
+/* ── Zone: Status bar ────────────────────────────────────────── */
+.zone-status {
+  display:       flex;
+  align-items:   center;
+  gap:           12px;
+  padding:       10px 14px;
+  border:        0.5px solid var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: 16px;
+  min-height:    42px;
+}
+
+/* ── Zone: Progress ──────────────────────────────────────────── */
+.zone-progress {
+  margin-bottom: 16px;
+}
+
+/* ── Zone: Controls (top section) ───────────────────────────── */
+.zone-controls {
+  display:        flex;
+  flex-direction: column;
+  gap:            20px;
+  margin-bottom:  16px;
+  padding:        20px 18px;
+  border:         0.5px solid var(--border);
+  border-radius:  var(--r-lg);
+}
+
+/* ── Control group ───────────────────────────────────────────── */
+.ctrl-group {
+  display:        flex;
+  flex-direction: column;
+  gap:            10px;
+}
+
+/* Horizontal button group (duration / visual / resolution rows) */
+.btn-group {
+  display:   flex;
+  gap:       6px;
+  flex-wrap: wrap;
+}
+
+/* Generate button row */
+.gen-row {
+  display: flex;
+  gap:     8px;
+}
+.gen-row .btn-primary { flex: 2; }
+.gen-row .btn         { flex: 1; }
+
+/* ── Zone: Canvas-over-controls overlay label ───────────────── */
+.canvas-module-label {
+  position:    absolute;
+  bottom:      12px;
+  left:        14px;
+  font-size:   9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color:       rgba(255,255,255,.3);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Zone: Middle — Visual + Audio controls ─────────────────── */
+.zone-middle {
+  display:        flex;
+  flex-direction: column;
+  gap:            12px;
+  padding:        18px;
+  border:         0.5px solid var(--border);
+  border-radius:  var(--r-lg);
+  margin-bottom:  16px;
+}
+
+/* ── Zone: Bottom — Download ─────────────────────────────────── */
+.zone-download {
+  display:        flex;
+  flex-direction: column;
+  gap:            12px;
+  padding:        18px;
+  border:         0.5px solid var(--border);
+  border-radius:  var(--r-lg);
+  margin-bottom:  16px;
+}
+
+.dl-row {
+  display: flex;
+  gap:     8px;
+}
+.dl-row .btn         { flex: 1; }
+.dl-row .btn-primary { flex: 2; }
+
+/* ── Log zone ────────────────────────────────────────────────── */
+.zone-log {
+  margin-bottom: 20px;
+}
+
+/* ── Dividers between zones ───────────────────────────────────── */
+.zone-divider {
+  height:        1px;
+  background:    var(--border);
+  margin:        4px 0 20px;
+  border:        none;
+}
+
+/* ── Responsive: mobile ──────────────────────────────────────── */
+@media (max-width: 520px) {
+  .app-shell {
+    padding: 24px 14px 60px;
+  }
+  .app-header { margin-bottom: 24px; }
+  .app-header h1 { font-size: 18px; }
+
+  .gen-row {
+    flex-direction: column;
+  }
+  .gen-row .btn-primary,
+  .gen-row .btn {
+    flex: none;
+    width: 100%;
+  }
+
+  .dl-row {
+    flex-direction: column;
+  }
+  .dl-row .btn,
+  .dl-row .btn-primary {
+    flex: none;
+    width: 100%;
+  }
+
+  .btn-group .sel-btn {
+    flex: 1;
+    min-width: 60px;
+    text-align: center;
+  }
+}
+
+/* ── Responsive: wide ────────────────────────────────────────── */
+@media (min-width: 900px) {
+  .app-main { max-width: 780px; }
+  .app-header { max-width: 780px; }
+}

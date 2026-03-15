@@ -1,0 +1,391 @@
+/* ============================================================
+   styles.css
+   Component styles for the Ambient Generator.
+   Montserrat font — dark theme — no emojis, SVG icons only.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+/* ── Reset & root ───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --font:         'Montserrat', sans-serif;
+
+  /* Palette */
+  --black:        #080808;
+  --black-2:      #0e0e0e;
+  --surface:      #141414;
+  --surface-2:    #1c1c1c;
+  --border:       #242424;
+  --border-2:     #303030;
+  --white:        #f0f0ee;
+  --white-2:      #c0c0bc;
+  --gray:         #606060;
+  --gray-2:       #888888;
+
+  /* Semantic */
+  --accent:       #e8e8e0;
+  --ok:           #90c888;
+  --warn:         #c8b870;
+  --err:          #c87870;
+
+  /* Spacing */
+  --gap-xs:       4px;
+  --gap-sm:       8px;
+  --gap-md:       12px;
+  --gap-lg:       20px;
+  --gap-xl:       32px;
+
+  /* Radius */
+  --r-sm:         3px;
+  --r-md:         6px;
+  --r-lg:         10px;
+
+  /* Transition */
+  --t:            0.15s ease;
+}
+
+html, body {
+  background:  var(--black);
+  color:       var(--white);
+  font-family: var(--font);
+  font-size:   14px;
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography ─────────────────────────────────────────────── */
+.eyebrow {
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color:          var(--gray);
+  display:        block;
+  margin-bottom:  6px;
+}
+
+h1 {
+  font-size:      24px;
+  font-weight:    700;
+  letter-spacing: -.02em;
+  color:          var(--white);
+  line-height:    1.2;
+}
+
+h2 {
+  font-size:      14px;
+  font-weight:    700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color:          var(--gray-2);
+  margin-bottom:  var(--gap-md);
+}
+
+.section-label {
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color:          var(--gray);
+  display:        block;
+  margin-bottom:  var(--gap-sm);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn {
+  font-family:    var(--font);
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding:        10px 20px;
+  border:         0.5px solid var(--border-2);
+  border-radius:  var(--r-md);
+  background:     transparent;
+  color:          var(--white);
+  cursor:         pointer;
+  transition:     background var(--t), opacity var(--t), transform var(--t);
+  white-space:    nowrap;
+  user-select:    none;
+  display:        inline-flex;
+  align-items:    center;
+  gap:            7px;
+}
+
+.btn:hover    { background: var(--surface-2); }
+.btn:active   { transform: scale(.98); }
+.btn:disabled {
+  opacity:  .28;
+  cursor:   not-allowed;
+  pointer-events: none;
+}
+
+/* Primary — filled white */
+.btn-primary {
+  background:   var(--white);
+  color:        var(--black);
+  border-color: var(--white);
+}
+.btn-primary:hover  { opacity: .88; background: var(--white); }
+.btn-primary:active { transform: scale(.97); }
+
+/* Danger */
+.btn-danger {
+  color:        var(--err);
+  border-color: var(--err);
+}
+.btn-danger:hover { background: rgba(200, 120, 112, .08); }
+
+/* Icon-only button */
+.btn-icon {
+  padding: 8px;
+  aspect-ratio: 1;
+  justify-content: center;
+}
+
+/* ── Selector buttons (duration / visual / resolution) ───────── */
+.sel-btn {
+  font-family:    var(--font);
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding:        8px 14px;
+  border:         0.5px solid var(--border);
+  border-radius:  var(--r-md);
+  background:     transparent;
+  color:          var(--gray);
+  cursor:         pointer;
+  transition:     all var(--t);
+}
+.sel-btn:hover  { color: var(--white); border-color: var(--gray); }
+.sel-btn.active {
+  background:   var(--white);
+  color:        var(--black);
+  border-color: var(--white);
+}
+
+/* ── Progress bar ────────────────────────────────────────────── */
+.progress-wrap {
+  display: none;   /* shown by UIController during GENERATING / EXPORTING */
+}
+.progress-label {
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color:          var(--gray);
+  margin-bottom:  6px;
+  display:        block;
+}
+.progress-track {
+  height:         2px;
+  background:     var(--border);
+  border-radius:  2px;
+  overflow:       hidden;
+}
+.progress-fill {
+  height:     100%;
+  background: var(--white);
+  width:      0%;
+  transition: width .15s linear;
+  border-radius: 2px;
+}
+
+/* ── Status badge ────────────────────────────────────────────── */
+.state-badge {
+  font-size:      9px;
+  font-weight:    700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding:        3px 9px;
+  border-radius:  var(--r-sm);
+  border:         0.5px solid var(--border);
+  background:     var(--surface);
+  color:          var(--gray);
+  min-width:      72px;
+  text-align:     center;
+  transition:     all .3s;
+}
+.state-badge.generating { background: #252510; border-color: #404020; color: #c0b860; }
+.state-badge.ready      { background: #102510; border-color: #205020; color: #70c068; }
+.state-badge.exporting  { background: #101025; border-color: #202050; color: #6868c0; }
+
+/* ── Animated status dot ──────────────────────────────────────── */
+.dot {
+  width:         7px;
+  height:        7px;
+  border-radius: 50%;
+  background:    var(--border-2);
+  flex-shrink:   0;
+  transition:    background .3s;
+}
+.dot.ok  { background: var(--ok); }
+.dot.err { background: var(--err); }
+.dot.run {
+  background: var(--warn);
+  animation:  dot-pulse 1s ease-in-out infinite;
+}
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .28; }
+}
+
+/* ── Panel / card ────────────────────────────────────────────── */
+.panel {
+  border:        0.5px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow:      hidden;
+}
+.panel-head {
+  padding:        12px 18px;
+  border-bottom:  0.5px solid var(--border);
+  display:        flex;
+  align-items:    center;
+  justify-content: space-between;
+  gap:            var(--gap-sm);
+}
+.panel-label {
+  font-size:      10px;
+  font-weight:    700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color:          var(--gray);
+}
+.panel-body { padding: 16px 18px; }
+
+/* ── Config description text ─────────────────────────────────── */
+.config-desc {
+  font-size:   11px;
+  font-weight: 500;
+  color:       var(--white-2);
+  font-style:  italic;
+}
+
+/* ── Status text ─────────────────────────────────────────────── */
+.status-text {
+  font-size:   11px;
+  font-weight: 500;
+  color:       var(--gray-2);
+}
+
+/* ── Range slider ────────────────────────────────────────────── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance:         none;
+  width:              100%;
+  height:             2px;
+  background:         var(--border-2);
+  border-radius:      2px;
+  outline:            none;
+  cursor:             pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width:              14px;
+  height:             14px;
+  border-radius:      50%;
+  background:         var(--white);
+  border:             none;
+  cursor:             pointer;
+  transition:         transform var(--t);
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+input[type="range"]::-moz-range-thumb {
+  width:         14px;
+  height:        14px;
+  border-radius: 50%;
+  background:    var(--white);
+  border:        none;
+  cursor:        pointer;
+}
+
+/* ── Text input ──────────────────────────────────────────────── */
+input[type="number"],
+input[type="text"] {
+  font-family:   var(--font);
+  font-size:     11px;
+  font-weight:   500;
+  padding:       7px 10px;
+  border:        0.5px solid var(--border);
+  border-radius: var(--r-md);
+  background:    var(--surface);
+  color:         var(--white);
+  outline:       none;
+  transition:    border-color var(--t);
+}
+input[type="number"]:focus,
+input[type="text"]:focus {
+  border-color: var(--border-2);
+}
+
+/* ── Audio element ───────────────────────────────────────────── */
+audio {
+  width:         100%;
+  filter:        invert(1);
+  border-radius: var(--r-md);
+  display:       none;   /* shown after first render */
+}
+
+/* ── Canvas wrapper ──────────────────────────────────────────── */
+.canvas-wrap {
+  width:         100%;
+  aspect-ratio:  16 / 9;
+  background:    #000;
+  border:        0.5px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow:      hidden;
+  position:      relative;
+}
+.canvas-wrap canvas {
+  width:   100%;
+  height:  100%;
+  display: block;
+}
+
+/* ── App log ─────────────────────────────────────────────────── */
+.app-log {
+  font-size:   11px;
+  font-weight: 500;
+  line-height: 1.9;
+  color:       var(--gray);
+  max-height:  160px;
+  overflow-y:  auto;
+}
+.app-log .log-line {
+  display: flex;
+  gap:     10px;
+}
+.app-log .log-ts  { color: var(--border-2); min-width: 44px; flex-shrink: 0; }
+.app-log .log-ok  { color: var(--ok); }
+.app-log .log-err { color: var(--err); }
+.app-log .log-inf { color: var(--white); }
+.app-log .log-dim { color: var(--gray); }
+
+/* ── Utility ─────────────────────────────────────────────────── */
+.flex        { display: flex; }
+.flex-col    { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-sm      { gap: var(--gap-sm); }
+.gap-md      { gap: var(--gap-md); }
+.gap-lg      { gap: var(--gap-lg); }
+.flex-wrap   { flex-wrap: wrap; }
+.flex-1      { flex: 1; }
+.w-full      { width: 100%; }
+.hidden      { display: none !important; }
+.mt-sm       { margin-top: var(--gap-sm); }
+.mt-md       { margin-top: var(--gap-md); }
+.mt-lg       { margin-top: var(--gap-lg); }
+.mb-sm       { margin-bottom: var(--gap-sm); }
+.mb-md       { margin-bottom: var(--gap-md); }
+.mb-lg       { margin-bottom: var(--gap-lg); }
