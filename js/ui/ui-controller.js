@@ -765,6 +765,8 @@ if (btnStop) btnStop.addEventListener('click', () => {
     if (this._el.btnDlAudioMp3) this._el.btnDlAudioMp3.disabled = state !== STATES.READY;
     if (this._el.btnDlVideo)    this._el.btnDlVideo.disabled    = state !== STATES.READY;
 
+    const btnStop = document.getElementById('btn-stop');
+    if (btnStop) btnStop.style.display = state === STATES.READY ? 'inline-flex' : 'none';
     const labels = {
       [STATES.IDLE]:       'Ready to generate',
       [STATES.GENERATING]: 'Generating...',
