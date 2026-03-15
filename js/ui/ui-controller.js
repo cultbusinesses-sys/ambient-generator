@@ -17,14 +17,14 @@ import { Randomizer }     from '../core/randomizer.js';
 import { AudioExporter }  from '../export/audio-export.js';
 import { VideoExporter }  from '../export/video-export.js';
 import { VisualEngine }   from '../visuals/visual-engine.js';
-import { WaveVisual }     from '../visuals/wave-visual.js';
-import { ParticleVisual } from '../visuals/particle-visual.js';
-import { IllusionVisual } from '../visuals/illusion-visual.js';
-import { TunnelVisual }   from '../visuals/tunnel-visual.js';
-import { PlasmaVisual }   from '../visuals/plasma-visual.js';
-import { StarfieldVisual }from '../visuals/starfield-visual.js';
-import { FractalVisual }  from '../visuals/fractal-visual.js';
-import { NebulaVisual }   from '../visuals/nebula-visual.js';
+import { VoidVisual }    from '../visuals/void-visual.js';
+import { BreathVisual }  from '../visuals/breath-visual.js';
+import { DriftVisual }   from '../visuals/drift-visual.js';
+import { DepthVisual }   from '../visuals/depth-visual.js';
+import { RippleVisual }  from '../visuals/ripple-visual.js';
+import { SpiralVisual }  from '../visuals/spiral-visual.js';
+import { PulseVisual }   from '../visuals/pulse-visual.js';
+import { WeaveVisual }   from '../visuals/weave-visual.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -48,16 +48,16 @@ const DURATION_PRESETS = {
   '5hr':  300 * 60,
 };
 
-// All 8 visual modules — picked randomly on every generate
+// All 8 deep illusion visual modules
 const VISUAL_MODULES = {
-  wave:      WaveVisual,
-  particle:  ParticleVisual,
-  illusion:  IllusionVisual,
-  tunnel:    TunnelVisual,
-  plasma:    PlasmaVisual,
-  starfield: StarfieldVisual,
-  fractal:   FractalVisual,
-  nebula:    NebulaVisual,
+  void:    VoidVisual,
+  breath:  BreathVisual,
+  drift:   DriftVisual,
+  depth:   DepthVisual,
+  ripple:  RippleVisual,
+  spiral:  SpiralVisual,
+  pulse:   PulseVisual,
+  weave:   WeaveVisual,
 };
 
 // Crossfade duration between music segments (seconds)
@@ -252,6 +252,9 @@ export class UIController {
     this._stopLoop();
 
     try {
+      // Fresh random config on every generate — different music every time
+      this._config = this._randomizer.generate();
+      this._updateConfigDisplay();
       this._setStatus('Generating audio + visuals in parallel...');
 
       // ── Pick random visual BEFORE starting ──────────────────────────────
