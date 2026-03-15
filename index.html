@@ -3,304 +3,318 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Generate infinite ambient music with evolving visuals. No login required.">
   <title>Ambient Generator</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/layout.css">
-
-  
   <script>
-    /**
-     * IMPORTANT — set this to your Railway server URL after deployment.
-     * Example: window.AMBIENT_SERVER_URL = 'https://ambient-generator.railway.app';
-     * Leave empty string '' to use local browser rendering (slow for long durations).
-     */
-    // window.AMBIENT_SERVER_URL = 'ambient-generator-production-d7ff.up.railway.app';
+    /* ── SET YOUR RAILWAY URL HERE ── */
     window.AMBIENT_SERVER_URL = 'https://ambient-generator-production-d7ff.up.railway.app';
   </script>
 
   <style>
-    /* ── Index-specific overrides ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Canvas module label — absolute inside .canvas-wrap */
-    .canvas-module-label {
-      position:    absolute;
-      bottom:      12px;
-      left:        14px;
-      font-size:   9px;
-      font-weight: 700;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color:       rgba(255,255,255,.3);
-      pointer-events: none;
-      user-select: none;
+    :root {
+      --black:  #080808;
+      --white:  #f0f0ee;
+      --gray:   #666;
+      --mid:    #141414;
+      --border: #242424;
+      --font:   'Montserrat', sans-serif;
+      --r:      8px;
     }
 
-    /* Progress section — hidden by default, shown by JS */
-    .zone-progress {
-      display: none;
-      margin-bottom: 16px;
-    }
-
-    /* Status bar row */
-    .zone-status {
+    body {
+      background: var(--black);
+      color:      var(--white);
+      font-family: var(--font);
+      min-height: 100vh;
+      padding: 32px 20px 64px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
+    }
+
+    /* ── Header ── */
+    .header { width: 100%; max-width: 720px; margin-bottom: 28px; }
+    .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--gray); display: block; margin-bottom: 5px; }
+    h1 { font-size: 22px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 4px; }
+    .sub { font-size: 12px; color: var(--gray); }
+
+    /* ── Main column ── */
+    .main { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 12px; }
+
+    /* ── Canvas ── */
+    .canvas-wrap {
+      width: 100%; aspect-ratio: 16/9;
+      background: #000;
       border: 0.5px solid var(--border);
-      border-radius: var(--r-lg);
-      margin-bottom: 16px;
-      min-height: 42px;
-      flex-wrap: wrap;
+      border-radius: var(--r);
+      overflow: hidden;
+      position: relative;
+    }
+    canvas { width: 100%; height: 100%; display: block; }
+    .canvas-label {
+      position: absolute; bottom: 10px; left: 12px;
+      font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: rgba(255,255,255,.25); pointer-events: none;
     }
 
-    /* Config desc takes remaining space */
-    #config-desc {
-      flex: 1;
-      text-align: right;
+    /* ── Status bar ── */
+    .status-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      border: 0.5px solid var(--border); border-radius: var(--r);
+      min-height: 42px; flex-wrap: wrap;
+    }
+    .state-badge {
+      font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 3px;
+      border: 0.5px solid var(--border); background: var(--mid); color: var(--gray);
+      min-width: 72px; text-align: center; transition: all .3s;
+    }
+    .state-badge.generating { background: #252510; border-color: #404020; color: #c0b860; }
+    .state-badge.ready      { background: #102510; border-color: #205020; color: #70c068; }
+    .state-badge.exporting  { background: #101025; border-color: #202050; color: #6868c0; }
+    #status-text  { font-size: 11px; color: #888; flex: 1; }
+    #config-desc  { font-size: 11px; color: var(--white); font-style: italic; text-align: right; }
+
+    /* ── Progress ── */
+    .progress-wrap { display: none; }
+    .progress-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gray); margin-bottom: 5px; display: block; }
+    .progress-track { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    #progress-fill  { height: 100%; background: var(--white); width: 0%; transition: width .15s; }
+
+    /* ── Panels ── */
+    .panel { border: 0.5px solid var(--border); border-radius: var(--r); padding: 18px; }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--gray); display: block; margin-bottom: 10px; }
+
+    /* ── Button groups ── */
+    .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .sel-btn {
+      font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      padding: 7px 13px; border: 0.5px solid var(--border); border-radius: 4px;
+      background: transparent; color: var(--gray); cursor: pointer; transition: all .15s;
+    }
+    .sel-btn:hover  { color: var(--white); border-color: #444; }
+    .sel-btn.active { background: var(--white); color: var(--black); border-color: var(--white); }
+
+    /* ── Generate row ── */
+    .gen-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: 10px 18px; border: 0.5px solid var(--border); border-radius: 4px;
+      background: transparent; color: var(--white); cursor: pointer; transition: all .15s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover   { background: var(--mid); }
+    .btn:active  { transform: scale(.98); }
+    .btn:disabled { opacity: .28; cursor: not-allowed; pointer-events: none; }
+    .btn-primary { background: var(--white); color: var(--black); border-color: var(--white); }
+    .btn-primary:hover { opacity: .88; background: var(--white); }
+    .btn-stop { border-color: #c87870; color: #c87870; }
+    .btn-stop:hover { background: rgba(200,120,112,.1); }
+
+    /* ── Custom duration input ── */
+    #dur-custom {
+      font-family: var(--font); font-size: 11px; padding: 7px 10px;
+      border: 0.5px solid var(--border); border-radius: 4px;
+      background: var(--mid); color: var(--white); width: 120px;
+      margin-top: 8px; display: none; outline: none;
     }
 
-    /* Section headers inside control zones */
-    .zone-controls,
-    .zone-middle,
-    .zone-download {
-      margin-bottom: 16px;
-    }
+    /* ── Download row ── */
+    .dl-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .dl-row .btn { flex: 1; justify-content: center; }
 
-    /* Audio player shown after generate */
-    #audio-preview {
-      display: none;
-      width: 100%;
-      margin-top: 10px;
-      filter: invert(1);
-      border-radius: var(--r-md);
-    }
+    /* ── Audio player ── */
+    #audio-preview { width: 100%; filter: invert(1); border-radius: 4px; margin-top: 10px; display: none; }
 
-    /* Log area */
-    .app-log {
-      max-height: 150px;
-    }
+    /* ── Log ── */
+    .log-panel { border: 0.5px solid var(--border); border-radius: var(--r); overflow: hidden; }
+    .log-head { padding: 11px 16px; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .log-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gray); }
+    .log-body  { padding: 14px 16px; }
+    .app-log   { font-size: 11px; line-height: 1.85; color: var(--gray); max-height: 150px; overflow-y: auto; }
+    .log-line  { display: flex; gap: 9px; }
+    .log-ts    { color: var(--border); min-width: 42px; flex-shrink: 0; }
+    .log-inf   { color: var(--white); }
 
-    /* Sub text in header */
-    .app-header .sub {
-      font-size: 12px;
-      color: var(--gray);
-      font-weight: 400;
-      margin-top: 6px;
+    /* ── Dot ── */
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: background .3s; }
+    .dot.ok  { background: #90c888; }
+    .dot.run { background: #c8c088; animation: pu 1s ease-in-out infinite; }
+    @keyframes pu { 0%,100%{opacity:1}50%{opacity:.3} }
+
+    @media (max-width: 500px) {
+      .dl-row { flex-direction: column; }
+      .gen-row { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
-<div class="app-shell">
-
-  <!-- ── Header ────────────────────────────────────────────── -->
-  <header class="app-header">
+  <!-- Header -->
+  <div class="header">
     <span class="eyebrow">Ambient Generator</span>
     <h1>Infinite Ambient Music</h1>
-    <p class="sub">Evolving ambient music with looping visuals. Download audio or video — no login.</p>
-  </header>
+    <p class="sub">Evolving ambient music with looping visuals. No login required.</p>
+  </div>
 
-  <main class="app-main">
+  <div class="main">
 
-    <!-- ── Visual Canvas ─────────────────────────────────── -->
-    <section class="zone-canvas" style="margin-bottom:16px">
-      <div class="canvas-wrap">
-        <canvas id="main-canvas"></canvas>
-        <div class="canvas-module-label" id="canvas-module-label">No visual loaded</div>
-      </div>
-    </section>
+    <!-- Canvas -->
+    <div class="canvas-wrap">
+      <canvas id="main-canvas"></canvas>
+      <div class="canvas-label" id="canvas-module-label">No visual loaded</div>
+    </div>
 
-    <!-- ── Status Bar ────────────────────────────────────── -->
-    <section class="zone-status">
+    <!-- Status -->
+    <div class="status-bar">
       <div class="state-badge" id="state-badge">Idle</div>
-      <div class="status-text" id="status-text">Ready to generate</div>
-      <div class="config-desc" id="config-desc"></div>
-    </section>
+      <div id="status-text">Ready to generate</div>
+      <div id="config-desc"></div>
+    </div>
 
-    <!-- ── Progress ──────────────────────────────────────── -->
-    <section class="zone-progress" id="progress-bar">
+    <!-- Progress -->
+    <div class="progress-wrap" id="progress-bar">
       <span class="progress-label" id="progress-label">Generating</span>
-      <div class="progress-track">
-        <div class="progress-fill" id="progress-fill"></div>
+      <div class="progress-track"><div id="progress-fill"></div></div>
+    </div>
+
+    <!-- Duration -->
+    <div class="panel">
+      <span class="section-label">Duration</span>
+      <div class="btn-group">
+        <button class="sel-btn active" data-duration="5m">5 min</button>
+        <button class="sel-btn" data-duration="15m">15 min</button>
+        <button class="sel-btn" data-duration="30m">30 min</button>
+        <button class="sel-btn" data-duration="1hr">1 hr</button>
+        <button class="sel-btn" data-duration="3hr">3 hr</button>
+        <button class="sel-btn" data-duration="5hr">5 hr</button>
+        <button class="sel-btn" data-duration="custom">Custom</button>
       </div>
-    </section>
+      <input id="dur-custom" type="number" min="1" max="600" placeholder="Minutes">
+    </div>
 
-    <!-- ── Top Controls ──────────────────────────────────── -->
-    <section class="zone-controls">
-
-      <!-- Duration -->
-      <div class="ctrl-group">
-        <span class="section-label">Duration</span>
-        <div class="btn-group">
-          <button class="sel-btn active" data-duration="5m">5 min</button>
-          <button class="sel-btn"        data-duration="15m">15 min</button>
-          <button class="sel-btn"        data-duration="30m">30 min</button>
-          <button class="sel-btn"        data-duration="1hr">1 hr</button>
-          <button class="sel-btn"        data-duration="3hr">3 hr</button>
-          <button class="sel-btn"        data-duration="5hr">5 hr</button>
-          <button class="sel-btn"        data-duration="custom">Custom</button>
-        </div>
-        <input
-          id="dur-custom"
-          type="number"
-          min="1"
-          max="600"
-          placeholder="Minutes"
-          style="display:none;width:130px;margin-top:8px"
-          aria-label="Custom duration in minutes"
-        >
+    <!-- Generate -->
+    <div class="panel">
+      <span class="section-label">Generate</span>
+      <div class="gen-row">
+        <button class="btn btn-primary" id="btn-generate">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><polygon points="2,1 9,5 2,9"/></svg>
+          Generate Music
+        </button>
+        <button class="btn" id="btn-random">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 3h2l4 4h2M1 7h2l2-2M8 1l2 2-2 2"/></svg>
+          Random Generate
+        </button>
+        <button class="btn btn-stop" id="btn-stop" style="display:none">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect x="2" y="2" width="6" height="6"/></svg>
+          Stop
+        </button>
       </div>
+    </div>
 
-      <!-- Generate -->
-      <div class="ctrl-group">
-        <span class="section-label">Generate</span>
-        <div class="gen-row">
-          <button class="btn btn-primary" id="btn-generate">
-          </div>
-            
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor">
-              <polygon points="2,1 10,5.5 2,10"/>
-            </svg>
-            Generate Music
-          </button>
-          <button class="btn" id="btn-random">
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 3h2l5 5h2M1 8h2l2-2M9 1l2 2-2 2"/>
-            </svg>
-            Random Generate
-          </button>
-        </div>
+    <!-- Visual Style -->
+    <div class="panel">
+      <span class="section-label">Visual Style</span>
+      <div class="btn-group">
+        <button class="sel-btn active" data-visual="wave">Wave Flow</button>
+        <button class="sel-btn" data-visual="particle">Particle Field</button>
+        <button class="sel-btn" data-visual="illusion">Illusion Field</button>
+        <button class="sel-btn" data-visual="tunnel">Tunnel</button>
+        <button class="sel-btn" data-visual="plasma">Plasma</button>
+        <button class="sel-btn" data-visual="starfield">Starfield</button>
+        <button class="sel-btn" data-visual="fractal">Fractal</button>
+        <button class="sel-btn" data-visual="nebula">Nebula</button>
       </div>
+    </div>
 
-    </section>
-
-    <!-- ── Middle Controls ───────────────────────────────── -->
-    <section class="zone-middle">
-
-      <!-- Visual Style -->
-      <div class="ctrl-group">
-        <span class="section-label">Visual Styles</span>
-        <div class="btn-group">
-          <button class="sel-btn active" data-visual="wave">Wave Flow</button>
-          <button class="sel-btn"        data-visual="particle">Particle Field</button>
-          <button class="sel-btn"        data-visual="illusion">Illusion Field</button>
-          <button class="sel-btn"        data-visual="tunnel">Tunnel</button>
-          <button class="sel-btn"        data-visual="plasma">Plasma</button>
-          <button class="sel-btn"        data-visual="starfield">Starfield</button>
-          <button class="sel-btn"        data-visual="fractal">Fractal</button>
-          <button class="sel-btn"        data-visual="nebula">Nebula</button>
-        </div>
+    <!-- Resolution -->
+    <div class="panel">
+      <span class="section-label">Video Resolution</span>
+      <div class="btn-group">
+        <button class="sel-btn active" data-resolution="720p">720p</button>
+        <button class="sel-btn" data-resolution="1080p">1080p</button>
+        <button class="sel-btn" data-resolution="2k">2K</button>
+        <button class="sel-btn" data-resolution="4k">4K</button>
       </div>
+    </div>
 
-      <!-- Resolution -->
-      <div class="ctrl-group" style="margin-top:16px">
-        <span class="section-label">Video Resolution</span>
-        <div class="btn-group">
-          <button class="sel-btn active" data-resolution="720p">720p</button>
-          <button class="sel-btn"        data-resolution="1080p">1080p</button>
-          <button class="sel-btn"        data-resolution="2k">2K</button>
-          <button class="sel-btn"        data-resolution="4k">4K</button>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- ── Download ──────────────────────────────────────── -->
-    <section class="zone-download">
+    <!-- Download -->
+    <div class="panel">
       <span class="section-label">Download</span>
-
       <div class="dl-row">
         <button class="btn" id="btn-dl-audio" disabled>
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5.5 1v7M2.5 5.5l3 3 3-3M1 9.5h9"/>
-          </svg>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 1v6M2.5 5l2.5 2.5L7.5 5M1 9h8"/></svg>
           Download WAV
         </button>
         <button class="btn" id="btn-dl-audio-mp3" disabled>
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5.5 1v7M2.5 5.5l3 3 3-3M1 9.5h9"/>
-          </svg>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 1v6M2.5 5l2.5 2.5L7.5 5M1 9h8"/></svg>
           Download MP3
         </button>
         <button class="btn btn-primary" id="btn-dl-video" disabled>
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="1" y="2.5" width="7" height="6" rx="1"/>
-            <path d="M8 4.5l2.5-1.5v4L8 5.5"/>
-          </svg>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2" width="6" height="6" rx="1"/><path d="M7 4l3-1.5v5L7 6"/></svg>
           Download Video
         </button>
       </div>
-
-      <!-- Audio preview player — shown after first generate -->
       <audio id="audio-preview" controls></audio>
+    </div>
 
-    </section>
-
-    <!-- ── Log ───────────────────────────────────────────── -->
-    <section class="panel zone-log">
-      <div class="panel-head">
-        <span class="panel-label">Log</span>
+    <!-- Log -->
+    <div class="log-panel">
+      <div class="log-head">
+        <span class="log-label">Log</span>
         <div class="dot" id="log-dot"></div>
       </div>
-      <div class="panel-body">
+      <div class="log-body">
         <div class="app-log" id="app-log-display"></div>
       </div>
-    </section>
+    </div>
 
-  </main>
-</div>
+  </div><!-- /main -->
 
-<!-- ── Bootstrap ─────────────────────────────────────────────── -->
 <script type="module">
   import { UIController } from './js/ui/ui-controller.js';
 
-  // ---------------------------------------------------------------------------
-  // AppController — extends UIController with index.html-specific UI wiring
-  // ---------------------------------------------------------------------------
   class AppController extends UIController {
 
-    // Override: drive state badge, dot, progress visibility, audio player
     _showState(state) {
       super._showState(state);
 
-      // State badge
       const badge = document.getElementById('state-badge');
       if (badge) {
-        const labels = {
-          idle: 'Idle', generating: 'Generating',
-          ready: 'Ready', exporting: 'Exporting'
-        };
-        badge.textContent = labels[state] ?? state;
+        badge.textContent = { idle:'Idle', generating:'Generating', ready:'Ready', exporting:'Exporting' }[state] ?? state;
         badge.className   = `state-badge ${state}`;
       }
 
-      // Log dot
       const dot = document.getElementById('log-dot');
       if (dot) {
-        if (state === 'generating' || state === 'exporting') dot.className = 'dot run';
-        else if (state === 'ready') dot.className = 'dot ok';
-        else dot.className = 'dot';
+        dot.className = (state === 'generating' || state === 'exporting') ? 'dot run'
+                      : state === 'ready' ? 'dot ok' : 'dot';
       }
 
-      // Progress bar section
       const pb = document.getElementById('progress-bar');
-      if (pb) {
-        pb.style.display = (state === 'generating' || state === 'exporting') ? 'block' : 'none';
-      }
+      if (pb) pb.style.display = (state === 'generating' || state === 'exporting') ? 'block' : 'none';
 
-      // Progress label
       const pl = document.getElementById('progress-label');
       if (pl) pl.textContent = state === 'exporting' ? 'Exporting' : 'Generating';
+
+      // Show/hide stop button
+      const stopBtn = document.getElementById('btn-stop');
+      if (stopBtn) stopBtn.style.display = state === 'ready' ? 'inline-flex' : 'none';
+
+      // Show audio player when ready
+      if (state === 'ready') {
+        const ap = document.getElementById('audio-preview');
+        if (ap) ap.style.display = 'block';
+      }
     }
 
-    // Override: write to the visible log panel
     _log(msg) {
       super._log(msg);
       const logEl = document.getElementById('app-log-display');
@@ -315,32 +329,31 @@
       while (logEl.children.length > 20) logEl.firstChild.remove();
     }
 
-    // Override: update canvas label on visual switch
-    async _switchVisual(name) {
-      await super._switchVisual(name);
-      this._updateCanvasLabel(name);
-    }
-
-    // Override: update canvas label after generate
     async _generate() {
       await super._generate();
-      this._updateCanvasLabel(this._selectedVis);
+      const lbl = document.getElementById('canvas-module-label');
+      const names = { wave:'Wave Flow', particle:'Particle Field', illusion:'Illusion Field', tunnel:'Tunnel', plasma:'Plasma', starfield:'Starfield', fractal:'Fractal', nebula:'Nebula' };
+      if (lbl) lbl.textContent = names[this._selectedVis] ?? this._selectedVis;
     }
 
-    _updateCanvasLabel(name) {
+    async _switchVisual(name) {
+      await super._switchVisual(name);
       const lbl = document.getElementById('canvas-module-label');
-      if (!lbl) return;
-      const labels = {
-        wave: 'Wave Flow', particle: 'Particle Field', illusion: 'Illusion Field'
-      };
-      lbl.textContent = labels[name] ?? name;
+      const names = { wave:'Wave Flow', particle:'Particle Field', illusion:'Illusion Field', tunnel:'Tunnel', plasma:'Plasma', starfield:'Starfield', fractal:'Fractal', nebula:'Nebula' };
+      if (lbl) lbl.textContent = names[name] ?? name;
     }
   }
 
-  // Boot
   const app = new AppController();
   app.init();
   window._app = app;
+
+  // Stop button
+  document.getElementById('btn-stop')?.addEventListener('click', () => {
+    app._stopLoop();
+    app._showState('idle');
+  });
+
   app._log('App ready — select a duration and press Generate Music');
 </script>
 
