@@ -242,13 +242,6 @@ export class UIController {
     if (this._el.btnRandom)   this._el.btnRandom.addEventListener('click',   () => this._randomize());
   }
 
-  const btnStop = document.getElementById('btn-stop');
-if (btnStop) btnStop.addEventListener('click', () => {
-  this._stopLoop();
-  this._showState(STATES.IDLE);
-  btnStop.style.display = 'none';
-});
-
   // ---------------------------------------------------------------------------
   // GENERATE — parallel audio render + visual init
   // ---------------------------------------------------------------------------
@@ -764,9 +757,6 @@ if (btnStop) btnStop.addEventListener('click', () => {
     if (this._el.btnDlAudio)    this._el.btnDlAudio.disabled    = state !== STATES.READY;
     if (this._el.btnDlAudioMp3) this._el.btnDlAudioMp3.disabled = state !== STATES.READY;
     if (this._el.btnDlVideo)    this._el.btnDlVideo.disabled    = state !== STATES.READY;
-
-    const btnStop = document.getElementById('btn-stop');
-    if (btnStop) btnStop.style.display = state === STATES.READY ? 'inline-flex' : 'none';
     const labels = {
       [STATES.IDLE]:       'Ready to generate',
       [STATES.GENERATING]: 'Generating...',
