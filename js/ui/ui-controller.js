@@ -757,6 +757,7 @@ export class UIController {
     if (this._el.btnDlAudio)    this._el.btnDlAudio.disabled    = state !== STATES.READY;
     if (this._el.btnDlAudioMp3) this._el.btnDlAudioMp3.disabled = state !== STATES.READY;
     if (this._el.btnDlVideo)    this._el.btnDlVideo.disabled    = state !== STATES.READY;
+
     const labels = {
       [STATES.IDLE]:       'Ready to generate',
       [STATES.GENERATING]: 'Generating...',
