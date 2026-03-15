@@ -223,15 +223,15 @@
     <div class="panel">
       <span class="section-label">Visual Style</span>
       <div class="btn-group">
-        <button class="sel-btn active" data-visual="wave">Wave Flow</button>
-        <button class="sel-btn" data-visual="particle">Particle Field</button>
-        <button class="sel-btn" data-visual="illusion">Illusion Field</button>
-        <button class="sel-btn" data-visual="tunnel">Tunnel</button>
-        <button class="sel-btn" data-visual="plasma">Plasma</button>
-        <button class="sel-btn" data-visual="starfield">Starfield</button>
-        <button class="sel-btn" data-visual="fractal">Fractal</button>
-        <button class="sel-btn" data-visual="nebula">Nebula</button>
-      </div>
+          <button class="sel-btn active" data-visual="void">Void</button>
+          <button class="sel-btn" data-visual="breath">Breath</button>
+          <button class="sel-btn" data-visual="drift">Drift</button>
+          <button class="sel-btn" data-visual="depth">Depth</button>
+          <button class="sel-btn" data-visual="ripple">Ripple</button>
+          <button class="sel-btn" data-visual="spiral">Spiral</button>
+          <button class="sel-btn" data-visual="pulse">Pulse</button>
+          <button class="sel-btn" data-visual="weave">Weave</button>
+        </div>
     </div>
 
     <!-- Resolution -->
@@ -332,14 +332,14 @@
     async _generate() {
       await super._generate();
       const lbl = document.getElementById('canvas-module-label');
-      const names = { wave:'Wave Flow', particle:'Particle Field', illusion:'Illusion Field', tunnel:'Tunnel', plasma:'Plasma', starfield:'Starfield', fractal:'Fractal', nebula:'Nebula' };
+      const names = { void:'Void', breath:'Breath', drift:'Drift', depth:'Depth', ripple:'Ripple', spiral:'Spiral', pulse:'Pulse', weave:'Weave' };
       if (lbl) lbl.textContent = names[this._selectedVis] ?? this._selectedVis;
     }
 
     async _switchVisual(name) {
       await super._switchVisual(name);
       const lbl = document.getElementById('canvas-module-label');
-      const names = { wave:'Wave Flow', particle:'Particle Field', illusion:'Illusion Field', tunnel:'Tunnel', plasma:'Plasma', starfield:'Starfield', fractal:'Fractal', nebula:'Nebula' };
+      const names = { void:'Void', breath:'Breath', drift:'Drift', depth:'Depth', ripple:'Ripple', spiral:'Spiral', pulse:'Pulse', weave:'Weave' };
       if (lbl) lbl.textContent = names[name] ?? name;
     }
   }
