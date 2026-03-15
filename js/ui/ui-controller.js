@@ -242,6 +242,13 @@ export class UIController {
     if (this._el.btnRandom)   this._el.btnRandom.addEventListener('click',   () => this._randomize());
   }
 
+  const btnStop = document.getElementById('btn-stop');
+if (btnStop) btnStop.addEventListener('click', () => {
+  this._stopLoop();
+  this._showState(STATES.IDLE);
+  btnStop.style.display = 'none';
+});
+
   // ---------------------------------------------------------------------------
   // GENERATE — parallel audio render + visual init
   // ---------------------------------------------------------------------------
