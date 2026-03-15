@@ -12,7 +12,9 @@
  * Output: Float32Array PCM → written to WAV file by encode-audio.js.
  */
 
-const { OfflineAudioContext } = require('@ircam/node-web-audio-api');
+// const { OfflineAudioContext } = require('@ircam/node-web-audio-api');
+
+// const { OfflineAudioContext } = require('@ircam/node-web-audio-api');
 
 // ---------------------------------------------------------------------------
 // Scale / note helpers (same as browser music-generator.js)
